@@ -300,6 +300,45 @@ def generar_nombre_password_longitud(cantidad, formato, largo):
     status_text.text(f"¡Completado! Se generaron {len(pares)} combinaciones únicas.")
     return list(pares)
 
+# Nuevas funciones para los combos solicitados
+def generar_numero_nombre_numero_nombre(cantidad, formato):
+    pares = set()
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    for i in range(cantidad):
+        nombre = aplicar_formato(names.get_first_name(), formato)
+        numero = ''.join(random.choices(string.digits, k=3))  # 3 dígitos
+        usuario = f"{numero}{nombre}"
+        password = f"{numero}{nombre}"
+        pares.add(f"{usuario}:{password}")
+        # Actualizar barra de progreso
+        progress = (i + 1) / cantidad
+        progress_bar.progress(progress)
+        status_text.text(f"Generando... {int(progress * 100)}%")
+    
+    status_text.text(f"¡Completado! Se generaron {len(pares)} combinaciones únicas.")
+    return list(pares)
+
+def generar_nombre_numero_nombre_numero(cantidad, formato):
+    pares = set()
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    for i in range(cantidad):
+        nombre = aplicar_formato(names.get_first_name(), formato)
+        numero = ''.join(random.choices(string.digits, k=3))  # 3 dígitos
+        usuario = f"{nombre}{numero}"
+        password = f"{nombre}{numero}"
+        pares.add(f"{usuario}:{password}")
+        # Actualizar barra de progreso
+        progress = (i + 1) / cantidad
+        progress_bar.progress(progress)
+        status_text.text(f"Generando... {int(progress * 100)}%")
+    
+    status_text.text(f"¡Completado! Se generaron {len(pares)} combinaciones únicas.")
+    return list(pares)
+
 # Función para descargar el archivo
 def get_download_link(texto, nombre_archivo, texto_boton):
     # Crear un archivo en memoria
@@ -325,7 +364,7 @@ def main():
         st.subheader("Selecciona el tipo de combo")
         
         # Opciones en tarjetas
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             if st.button("1. Usuario aleatorio / Contraseña numérica", key="btn1"):
@@ -352,6 +391,12 @@ def main():
                 st.session_state.opcion = 8
             if st.button("10. Nick / Contraseña apellido+nick", key="btn10"):
                 st.session_state.opcion = 10
+            if st.button("12. 123nombre:123nombre", key="btn12"):
+                st.session_state.opcion = 12
+        
+        with col3:
+            if st.button("13. nombre123:nombre123", key="btn13"):
+                st.session_state.opcion = 13
         
         # Inicializar la opción si no existe
         if 'opcion' not in st.session_state:
@@ -370,7 +415,9 @@ def main():
                 "Nick (apellido) / Contraseña solo año",
                 "Nick (apellido) como usuario y contraseña",
                 "Nick (apellido) / Contraseña apellido+nick",
-                "Nombre propio como usuario / Contraseña numérica (longitud elegida)"
+                "Nombre propio como usuario / Contraseña numérica (longitud elegida)",
+                "123nombre:123nombre (3 dígitos + nombre)",
+                "nombre123:nombre123 (nombre + 3 dígitos)"
             ]
             st.info(f"Opción seleccionada: {opciones[st.session_state.opcion-1]}")
             
@@ -422,6 +469,10 @@ def main():
                         pares = generar_nick_apellido_nick(cantidad, formato_num)
                     elif st.session_state.opcion == 11:
                         pares = generar_nombre_password_longitud(cantidad, formato_num, largo)
+                    elif st.session_state.opcion == 12:
+                        pares = generar_numero_nombre_numero_nombre(cantidad, formato_num)
+                    elif st.session_state.opcion == 13:
+                        pares = generar_nombre_numero_nombre_numero(cantidad, formato_num)
                     
                     # Guardar en la sesión
                     st.session_state.pares = pares
